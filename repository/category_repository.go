@@ -15,7 +15,7 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 
 func (r *CategoryRepository) Create(name string) (model.Category, error) {
 	var n model.Category
-	query := `INSERT INTO Categories (name) 
+	query := `INSERT INTO categories (name) 
 	VALUES ($1) RETURNING id, name`
 	err := r.DB.QueryRow(query, name).Scan(
 		&n.ID,

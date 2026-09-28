@@ -23,9 +23,9 @@ func (h *NoteHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Note, err := h.Service.CreateNote(input.CategoryID, input.Title, input.Content)
+	Note, err := h.Service.CreateNote(*input.CategoryID, input.Title, input.Content)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 

@@ -25,7 +25,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	Category, err := h.Service.CreateCategory(input.Name)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 

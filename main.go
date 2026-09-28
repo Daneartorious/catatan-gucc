@@ -51,10 +51,10 @@ func main() {
 	categoryService := service.NewCategoryService(categoryRepo)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
-	http.HandleFunc("POST /category/create", categoryHandler.Create)
+	http.HandleFunc("POST /categories/create", categoryHandler.Create)
 
 	http.HandleFunc("POST /notes/create", noteHandler.Create)
 
-	fmt.Println("Server jalan di htto://localhost:8088")
+	fmt.Println("Server jalan di http://localhost:8088")
 	http.ListenAndServe(":8088", nil)
 }
