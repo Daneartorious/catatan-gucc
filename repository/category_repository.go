@@ -23,3 +23,24 @@ func (r *CategoryRepository) Create(name string) (model.Category, error) {
 	)
 	return n, err
 }
+
+func (r *CategoryRepository) GetAll() ([]model.Category, error) {
+	query := `SELECT id, name FROM categories`
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var category []model.Category
+	for rows.Next() {
+		var c model.Category
+
+		if err := rows.Scan(&c.ID, &c.Name); err != nil {
+			return nil, err
+		}
+		category = append(category, c)
+	}
+	return category, nil
+}

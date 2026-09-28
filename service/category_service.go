@@ -20,3 +20,7 @@ func (s *CategoryService) CreateCategory(name string) (model.Category, error) {
 	}
 	return s.Repo.Create(name)
 }
+
+func (s *CategoryService) GetAllCategory() ([]model.Category, error) {
+	return s.Repo.GetAll()
+}

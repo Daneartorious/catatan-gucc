@@ -23,7 +23,7 @@ func (h *NoteHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Note, err := h.Service.CreateNote(*input.CategoryID, input.Title, input.Content)
+	note, err := h.Service.CreateNote(*input.CategoryID, input.Title, input.Content)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -31,5 +31,18 @@ func (h *NoteHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(Note)
+	json.NewEncoder(w).Encode(note)
+}
+
+func (h *NoteHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+
+	note, err := h.Service.GetAllNote()
+	if err != nil {
+		http.Error(w, "Gagal mengambil data", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(note)
 }

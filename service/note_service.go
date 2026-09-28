@@ -20,3 +20,7 @@ func (s *NoteService) CreateNote(category_id int, title string, content string) 
 	}
 	return s.Repo.Create(category_id, title, content)
 }
+
+func (s *NoteService) GetAllNote() ([]model.Note, error) {
+	return s.Repo.GetAll()
+}

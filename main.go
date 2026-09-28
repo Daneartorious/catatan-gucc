@@ -52,8 +52,10 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
 	http.HandleFunc("POST /categories/create", categoryHandler.Create)
+	http.HandleFunc("GET /categories", categoryHandler.GetAll)
 
 	http.HandleFunc("POST /notes/create", noteHandler.Create)
+	http.HandleFunc("GET /notes", noteHandler.GetAll)
 
 	fmt.Println("Server jalan di http://localhost:8088")
 	http.ListenAndServe(":8088", nil)
