@@ -5,6 +5,7 @@ import (
 	"catatan-backend/service"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type NoteHandler struct {
@@ -45,4 +46,21 @@ func (h *NoteHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(note)
+}
+
+func (h *NoteHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+    	http.Error(w, "ID tidak valid", http.StatusBadRequest)
+    	return
+	}
+	err = h.Service.DeleteNote(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Note berhasil dihapus"})
 }

@@ -24,3 +24,7 @@ func (s *NoteService) CreateNote(category_id int, title string, content string) 
 func (s *NoteService) GetAllNote() ([]model.Note, error) {
 	return s.Repo.GetAll()
 }
+
+func (s *NoteService) DeleteNote(id int) error {
+	return s.Repo.Delete(id)
+}

@@ -3,6 +3,7 @@ package repository
 import (
 	"catatan-backend/model"
 	"database/sql"
+	"errors"
 )
 
 type NoteRepository struct {
@@ -13,11 +14,11 @@ func NewNoteRepository(db *sql.DB) *NoteRepository {
 	return &NoteRepository{DB: db}
 }
 
-func (r *NoteRepository) Create(Note_id int, title string, content string) (model.Note, error) {
+func (r *NoteRepository) Create(category_id int, title string, content string) (model.Note, error) {
 	var n model.Note
-	query := `INSERT INTO notes (Note_id, title, content) 
-	VALUES ($1, $2, $3) RETURNING id, Note_id, title, content`
-	err := r.DB.QueryRow(query, Note_id, title, content).Scan(
+	query := `INSERT INTO notes (category_id, title, content) 
+	VALUES ($1, $2, $3) RETURNING id, category_id, title, content`
+	err := r.DB.QueryRow(query, category_id, title, content).Scan(
 		&n.ID,
 		&n.CategoryID,
 		&n.Title,
@@ -45,4 +46,17 @@ func (r *NoteRepository) GetAll() ([]model.Note, error) {
 		note = append(note, n)
 	}
 	return note, nil
+}
+
+func (r *NoteRepository) Delete(id int) error {
+	query := `DELETE FROM notes WHERE id = $1`
+	result, err := r.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return errors.New("Note tidak ditemukan")
+	}
+	return nil
 }

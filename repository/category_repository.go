@@ -3,6 +3,7 @@ package repository
 import (
 	"catatan-backend/model"
 	"database/sql"
+	"errors"
 )
 
 type CategoryRepository struct {
@@ -43,4 +44,17 @@ func (r *CategoryRepository) GetAll() ([]model.Category, error) {
 		category = append(category, c)
 	}
 	return category, nil
+}
+
+func (r *CategoryRepository) Delete(id int) error {
+	query := `DELETE FROM categories WHERE id = $1`
+	result, err := r.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return errors.New("Category tidak ditemukan")
+	}
+	return nil
 }

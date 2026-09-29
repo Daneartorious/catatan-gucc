@@ -24,3 +24,7 @@ func (s *CategoryService) CreateCategory(name string) (model.Category, error) {
 func (s *CategoryService) GetAllCategory() ([]model.Category, error) {
 	return s.Repo.GetAll()
 }
+
+func (s *CategoryService) DeleteCategory(id int) error {
+	return s.Repo.Delete(id)
+}
