@@ -46,6 +46,23 @@ func (r *CategoryRepository) GetAll() ([]model.Category, error) {
 	return category, nil
 }
 
+func (r *CategoryRepository) Update(id int, name string) (model.Category, error) {
+	query := `UPDATE categories SET name = $1 WHERE id = $2`
+	var updatedCategory model.Category
+	result, err := r.DB.Exec(query, name, id)
+	if err != nil {
+		return updatedCategory, err
+	}
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return updatedCategory, errors.New("category tidak ditemukan")
+	}
+	updatedCategory.ID = id
+	updatedCategory.Name = name
+
+	return updatedCategory, nil
+}
+
 func (r *CategoryRepository) Delete(id int) error {
 	query := `DELETE FROM categories WHERE id = $1`
 	result, err := r.DB.Exec(query, id)
@@ -54,7 +71,7 @@ func (r *CategoryRepository) Delete(id int) error {
 	}
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
-		return errors.New("Category tidak ditemukan")
+		return errors.New("category tidak ditemukan")
 	}
 	return nil
 }

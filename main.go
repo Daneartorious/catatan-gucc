@@ -54,10 +54,12 @@ func main() {
 	http.HandleFunc("POST /categories/create", categoryHandler.Create)
 	http.HandleFunc("GET /categories", categoryHandler.GetAll)
 	http.HandleFunc("DELETE /categories/delete", categoryHandler.Delete)
+	http.HandleFunc("PUT /categories/update", categoryHandler.Update)
 
 	http.HandleFunc("POST /notes/create", noteHandler.Create)
 	http.HandleFunc("GET /notes", noteHandler.GetAll)
 	http.HandleFunc("DELETE /notes/delete", noteHandler.Delete)
+	http.HandleFunc("PUT /notes/update", noteHandler.Update)
 
 	fmt.Println("Server jalan di http://localhost:8088")
 	http.ListenAndServe(":8088", nil)

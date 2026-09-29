@@ -14,15 +14,22 @@ func NewNoteService(repo *repository.NoteRepository) *NoteService {
 	return &NoteService{Repo: repo}
 }
 
-func (s *NoteService) CreateNote(category_id int, title string, content string) (model.Note, error) {
+func (s *NoteService) CreateNote(categoryID int, title string, content string) (model.Note, error) {
 	if title == "" {
 		return model.Note{}, errors.New("title tidak boleh kosong")
 	}
-	return s.Repo.Create(category_id, title, content)
+	return s.Repo.Create(categoryID, title, content)
 }
 
 func (s *NoteService) GetAllNote() ([]model.Note, error) {
 	return s.Repo.GetAll()
+}
+
+func (s *NoteService) UpdateNote(id int, categoryID int, title string, content string) (model.Note, error) {
+	if title == "" {
+		return model.Note{}, errors.New("title tidak boleh kosong")
+	}
+	return s.Repo.Update(id, categoryID, title, content)
 }
 
 func (s *NoteService) DeleteNote(id int) error {
