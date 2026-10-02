@@ -25,6 +25,10 @@ func (s *CategoryService) GetAllCategory() ([]model.Category, error) {
 	return s.Repo.GetAll()
 }
 
+func (s *CategoryService) GetCategoryByID(id int) (model.Category, error) {
+	return s.Repo.GetByID(id)
+}
+
 func (s *CategoryService) UpdateCategory(id int, name string) (model.Category, error) {
 	if name == "" {
 		return model.Category{}, errors.New("nama tidak boleh kosong")

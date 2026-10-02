@@ -25,6 +25,10 @@ func (s *NoteService) GetAllNote() ([]model.Note, error) {
 	return s.Repo.GetAll()
 }
 
+func (s *NoteService) GetNoteByID(id int) (model.Note, error) {
+	return s.Repo.GetByID(id)
+}
+
 func (s *NoteService) UpdateNote(id int, categoryID int, title string, content string) (model.Note, error) {
 	if title == "" {
 		return model.Note{}, errors.New("title tidak boleh kosong")

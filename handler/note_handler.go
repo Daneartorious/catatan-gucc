@@ -52,10 +52,33 @@ func (h *NoteHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(note)
 }
 
-func (h *NoteHandler) Update(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Query().Get("id")
+func (h *NoteHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		http.Error(w, "id harus berupa angka positif", http.StatusBadRequest)
+		return
+	}
+
+	note, err := h.Service.GetNoteByID(id)
 	if err != nil {
+		if err.Error() == "note tidak ditemukan" {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(note)
+}
+
+func (h *NoteHandler) Update(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
 		http.Error(w, "id harus berupa angka positif", http.StatusBadRequest)
 		return
 	}
@@ -78,7 +101,11 @@ func (h *NoteHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.Service.UpdateNote(id, *updatedNote.CategoryID, updatedNote.Title, updatedNote.Content)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		if err.Error() == "note tidak ditemukan" {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -87,15 +114,19 @@ func (h *NoteHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *NoteHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Query().Get("id")
+	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "id tidak valid", http.StatusBadRequest)
+	if err != nil || id <= 0 {
+		http.Error(w, "id harus berupa angka positif", http.StatusBadRequest)
 		return
 	}
 	err = h.Service.DeleteNote(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		if err.Error() == "note tidak ditemukan" {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")

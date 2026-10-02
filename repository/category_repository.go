@@ -34,7 +34,7 @@ func (r *CategoryRepository) GetAll() ([]model.Category, error) {
 
 	defer rows.Close()
 
-	var category []model.Category
+	category := make([]model.Category, 0)
 	for rows.Next() {
 		var c model.Category
 
@@ -43,7 +43,24 @@ func (r *CategoryRepository) GetAll() ([]model.Category, error) {
 		}
 		category = append(category, c)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return category, nil
+}
+
+func (r *CategoryRepository) GetByID(id int) (model.Category, error) {
+	var c model.Category
+	query := `SELECT id, name FROM categories WHERE id = $1`
+	err := r.DB.QueryRow(query, id).Scan(&c.ID, &c.Name)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return c, errors.New("category tidak ditemukan")
+		}
+		return c, err
+	}
+	return c, nil
 }
 
 func (r *CategoryRepository) Update(id int, name string) (model.Category, error) {

@@ -40,17 +40,38 @@ func (r *NoteRepository) GetAll() ([]model.Note, error) {
 	}
 
 	defer rows.Close()
-
-	var note []model.Note
+	note := make([]model.Note, 0)
 	for rows.Next() {
 		var n model.Note
 
-		if err := rows.Scan(&n.ID, &n.CategoryID, &n.Title, &n.Content); err != nil {
+		if err := rows.Scan(&n.ID, &n.CategoryID, &n.Title, &n.Content, &n.CategoryName); err != nil {
 			return nil, err
 		}
 		note = append(note, n)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return note, nil
+}
+
+func (r *NoteRepository) GetByID(id int) (model.Note, error) {
+	var n model.Note
+	query := `
+	SELECT n.id, n.category_id, n.title, n.content, c.name AS category_name
+	FROM notes n 
+	LEFT JOIN categories c ON n.category_id = c.id
+	WHERE n.id = $1
+	`
+	err := r.DB.QueryRow(query, id).Scan(&n.ID, &n.CategoryID, &n.Title, &n.Content, &n.CategoryName)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return n, errors.New("note tidak ditemukan")
+		}
+		return n, err
+	}
+	return n, nil
 }
 
 func (r *NoteRepository) Update(id int, categoryID int, title string, content string) (model.Note, error) {
@@ -63,7 +84,7 @@ func (r *NoteRepository) Update(id int, categoryID int, title string, content st
 	}
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
-		return updatedNote, errors.New("category tidak ditemukan")
+		return updatedNote, errors.New("note tidak ditemukan")
 	}
 	updatedNote.ID = id
 	updatedNote.CategoryID = &categoryID
