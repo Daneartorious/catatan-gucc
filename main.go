@@ -16,6 +16,21 @@ import (
 	_ "github.com/lib/pq"
 )
 
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -68,5 +83,5 @@ func main() {
 	http.HandleFunc("PUT /notes/{id}", noteHandler.Update)
 
 	fmt.Println("Server jalan di http://localhost:8088")
-	log.Fatal(http.ListenAndServe(":8088", nil))
+	log.Fatal(http.ListenAndServe(":8088", enableCORS(http.DefaultServeMux)))
 }
